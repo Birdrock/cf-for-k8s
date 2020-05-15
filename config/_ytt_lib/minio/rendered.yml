@@ -4,7 +4,7 @@ kind: ServiceAccount
 metadata:
   labels:
     app: minio-update-prometheus-secret
-    chart: minio-5.0.22
+    chart: minio-5.0.24
     heritage: Helm
     release: cf-blobstore
   name: cf-blobstore-minio-update-prometheus-secret
@@ -23,7 +23,7 @@ kind: Secret
 metadata:
   labels:
     app: minio
-    chart: minio-5.0.22
+    chart: minio-5.0.24
     heritage: Helm
     release: cf-blobstore
   name: cf-blobstore-minio
@@ -113,33 +113,17 @@ kind: ConfigMap
 metadata:
   labels:
     app: minio
-    chart: minio-5.0.22
+    chart: minio-5.0.24
     heritage: Helm
     release: cf-blobstore
   name: cf-blobstore-minio
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  labels:
-    app: minio
-    chart: minio-5.0.22
-    heritage: Helm
-    release: cf-blobstore
-  name: cf-blobstore-minio
-spec:
-  accessModes:
-  - ReadWriteOnce
-  resources:
-    requests:
-      storage: 10Gi
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
   labels:
     app: minio-update-prometheus-secret
-    chart: minio-5.0.22
+    chart: minio-5.0.24
     heritage: Helm
     release: cf-blobstore
   name: cf-blobstore-minio-update-prometheus-secret
@@ -175,7 +159,7 @@ kind: RoleBinding
 metadata:
   labels:
     app: minio-update-prometheus-secret
-    chart: minio-5.0.22
+    chart: minio-5.0.24
     heritage: Helm
     release: cf-blobstore
   name: cf-blobstore-minio-update-prometheus-secret
@@ -193,7 +177,7 @@ kind: Service
 metadata:
   labels:
     app: minio
-    chart: minio-5.0.22
+    chart: minio-5.0.24
     heritage: Helm
     release: cf-blobstore
   name: cf-blobstore-minio
@@ -208,8 +192,28 @@ spec:
     release: cf-blobstore
   type: ClusterIP
 ---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: minio
+    chart: minio-5.0.24
+    heritage: Helm
+    release: cf-blobstore
+  name: cf-blobstore-minio-svc
+spec:
+  clusterIP: None
+  ports:
+  - name: http
+    port: 9000
+    protocol: TCP
+  publishNotReadyAddresses: true
+  selector:
+    app: minio
+    release: cf-blobstore
+---
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   annotations:
     kbld.k14s.io/images: |
@@ -220,26 +224,24 @@ metadata:
         URL: index.docker.io/minio/minio@sha256:5e96d539583afd9a7da14e0d9bf2360d316e4e8219659d82b8ef106a9d75b16c
   labels:
     app: minio
-    chart: minio-5.0.22
+    chart: minio-5.0.24
     heritage: Helm
     release: cf-blobstore
   name: cf-blobstore-minio
 spec:
+  podManagementPolicy: Parallel
+  replicas: 4
   selector:
     matchLabels:
       app: minio
       release: cf-blobstore
-  strategy:
-    rollingUpdate:
-      maxSurge: 100%
-      maxUnavailable: 0
-    type: RollingUpdate
+  serviceName: cf-blobstore-minio-svc
   template:
     metadata:
       annotations:
-        checksum/config: 5d754ff6661141c802675a9180286885b3e839450ebe2e1260dd07aeb2343383
-        checksum/secrets: be465545d935bfa4b2d7bba629da94c60c0ef6e4cbe78a6d842373897d74d952
-        rollme: s5Z1f
+        checksum/config: c7ff15b94663a44bf3ab92968624b53e77c23db108410af1a5fefe69548f131b
+        checksum/secrets: c28110695eaa1d1837b002dcdc9069387dcb35c728f64bf17e3ca530d575b3c3
+        rollme: z1zZf
       labels:
         app: minio
         release: cf-blobstore
@@ -249,7 +251,7 @@ spec:
       - command:
         - /bin/sh
         - -ce
-        - /usr/bin/docker-entrypoint.sh minio -S /etc/minio/certs/ server /export
+        - /usr/bin/docker-entrypoint.sh minio -S /etc/minio/certs/ server  http://cf-blobstore-minio-{0...3}.cf-blobstore-minio-svc.cf-blobstore.svc.cluster.local/export
         env:
         - name: MINIO_ACCESS_KEY
           valueFrom:
@@ -282,6 +284,7 @@ spec:
           httpGet:
             path: /minio/health/ready
             port: http
+            scheme: HTTP
           initialDelaySeconds: 60
           periodSeconds: 15
           successThreshold: 1
@@ -293,11 +296,23 @@ spec:
         volumeMounts:
         - mountPath: /export
           name: export
+      securityContext:
+        fsGroup: 1000
+        runAsGroup: 1000
+        runAsUser: 1000
       serviceAccountName: cf-blobstore-minio
       volumes:
-      - name: export
-        persistentVolumeClaim:
-          claimName: cf-blobstore-minio
       - name: minio-user
         secret:
           secretName: cf-blobstore-minio
+  updateStrategy:
+    type: RollingUpdate
+  volumeClaimTemplates:
+  - metadata:
+      name: export
+    spec:
+      accessModes:
+      - ReadWriteOnce
+      resources:
+        requests:
+          storage: 10Gi

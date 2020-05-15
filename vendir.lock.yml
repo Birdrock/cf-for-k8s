@@ -40,9 +40,9 @@ directories:
   path: build/metacontroller/_vendir
 - contents:
   - git:
-      commitTitle: '[stable/minio]: add serviceAccountName in create-bucket-job to
-        make it consistent (#21907)...'
-      sha: f8d1e522df1e4841e7a4a1a46d59bce9a9bad904
+      commitTitle: '[stable/minio] Add variables for etcd and for s3 gateway credentials.
+        (#21639)...'
+      sha: 86e74e6394afb878d588b832f98d1b780800ee98
     path: .
   path: build/minio/_vendir
 - contents:
