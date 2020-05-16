@@ -56,8 +56,6 @@ directories:
 # the manual param tells vendir to not override/touch the contents of these config/_ytt_lib/<eirini|minio|postgres> directories
   - path: eirini
     manual: {}
-  - path: minio
-    manual: {}
   - path: metacontroller
     manual: {}
   - path: postgres
@@ -78,15 +76,6 @@ directories:
 # 3. Navigate to the corresponding directory of https://github.com/helm/charts/tree/master/stable or related repo
 # 4. Look at the history or blame log of the Chart.yaml file to find when the version was bumped to the version you found earlier.
 # 5. The SHA of the commit that bumped the version will be the SHA you use as the 'ref' of the git section below.
-- path: build/minio/_vendir
-  contents:
-  - path: .
-    git:
-      url: https://github.com/helm/charts
-      ref: f8d1e522df1e4841e7a4a1a46d59bce9a9bad904 # version: 5.0.22
-    includePaths:
-    - stable/minio/**/*
-
 - path: build/eirini/_vendir
   contents:
   - path: .
