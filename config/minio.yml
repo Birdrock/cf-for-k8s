@@ -19,10 +19,73 @@ kind: Namespace
 metadata:
   name: cf-blobstore
 
+---
+apiVersion: v1
+data:
+  accesskey: null
+  secretkey: null
+kind: Secret
+metadata:
+  labels:
+    app: minio
+    chart: minio-5.0.22
+    heritage: Helm
+    release: cf-blobstore
+  name: cf-blobstore-minio
+  namespace: cf-blobstore
+type: Opaque
+
+#@overlay/match by=overlay.subset({"kind": "Deployment", "metadata": {"name": "minio"}})
+---
+metadata:
+  name: cf-blobstore-minio
+
+#@overlay/match by=overlay.subset({"kind": "Deployment", "metadata": {"name": "cf-blobstore-minio"}})
+---
+spec:
+  template:
+    spec:
+      containers:
+      #@overlay/match by=overlay.subset({"name":"minio"})
+      - name: minio
+        env:
+        #@overlay/match by=overlay.subset({"name": "MINIO_ACCESS_KEY"})
+        - name: MINIO_ACCESS_KEY
+          #@overlay/match missing_ok=True
+          valueFrom:
+            secretKeyRef:
+              key: accesskey
+              name: cf-blobstore-minio
+          #@overlay/remove
+          value:
+        #@overlay/match by=overlay.subset({"name": "MINIO_SECRET_KEY"})
+        - name: MINIO_SECRET_KEY
+          #@overlay/match missing_ok=True
+          valueFrom:
+            secretKeyRef:
+              key: secretkey
+              name: cf-blobstore-minio
+          #@overlay/remove
+          value:
+      volumes:
+        #@overlay/append
+        - name: minio-user
+          secret:
+            secretName: cf-blobstore-minio
+
+#@overlay/match by=overlay.subset({"kind": "Service", "metadata": {"name": "minio-service"}})
+---
+metadata:
+  #@overlay/replace
+  name: cf-blobstore-minio
+spec:
+  #@overlay/replace
+  type: ClusterIP
+
 #@overlay/match by=overlay.subset({"kind": "Secret", "metadata": {"name": "cf-blobstore-minio"}})
 ---
 data:
   accesskey: #@ base64.encode(must_exist(data.values, "cf_blobstore.access_key"))
   secretkey: #@ base64.encode(must_exist(data.values, "cf_blobstore.secret_key"))
 
---- #@ template.replace(overlay.apply(library.get("minio").eval(), add_cf_blobstore_namespace()))
+--- #@ template.replace(overlay.apply(library.get("github.com/minio/minio/docs/orchestration/kubernetes").eval(), add_cf_blobstore_namespace()))

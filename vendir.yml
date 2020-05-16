@@ -5,6 +5,12 @@ minimumRequiredVersion: 0.8.0
 directories:
 - path: config/_ytt_lib
   contents:
+  - path: github.com/minio/minio
+    git:
+      url: https://github.com/minio/minio
+      ref: 24f20eb1bdff35407818ce4107af7727469b776e
+    includePaths:
+    - docs/orchestration/kubernetes/minio-standalone*
   - path: github.com/cloudfoundry/cf-k8s-networking
     git:
       url: https://github.com/cloudfoundry/cf-k8s-networking
