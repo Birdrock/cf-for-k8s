@@ -2,8 +2,8 @@ apiVersion: vendir.k14s.io/v1alpha1
 directories:
 - contents:
   - git:
-      commitTitle: Update yaml files to latest version RELEASE.2020-05-06T23-23-25Z
-      sha: 24f20eb1bdff35407818ce4107af7727469b776e
+      commitTitle: add comment on exported error
+      sha: 9cac385aecdb49ada08e30faf225f8743f1a5189
     path: github.com/minio/minio
   - git:
       commitTitle: Update routecontroller image digest to sha256:e097d844f30ad4516b646ee3dc32614d9e76ba764c7ac280c3d1094163a35692
@@ -30,8 +30,6 @@ directories:
   - manual: {}
     path: eirini
   - manual: {}
-    path: minio
-  - manual: {}
     path: metacontroller
   - manual: {}
     path: postgres
@@ -42,13 +40,6 @@ directories:
       sha: eacb75b4d562e3fb158eb2147a6768407ab374d4
     path: .
   path: build/metacontroller/_vendir
-- contents:
-  - git:
-      commitTitle: '[stable/minio]: add serviceAccountName in create-bucket-job to
-        make it consistent (#21907)...'
-      sha: f8d1e522df1e4841e7a4a1a46d59bce9a9bad904
-    path: .
-  path: build/minio/_vendir
 - contents:
   - githubRelease:
       url: https://api.github.com/repos/cloudfoundry-incubator/eirini-release/releases/24924434

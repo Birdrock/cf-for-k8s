@@ -8,7 +8,7 @@ directories:
   - path: github.com/minio/minio
     git:
       url: https://github.com/minio/minio
-      ref: 24f20eb1bdff35407818ce4107af7727469b776e
+      ref: 9cac385aecdb49ada08e30faf225f8743f1a5189
     includePaths:
     - docs/orchestration/kubernetes/minio-standalone*
   - path: github.com/cloudfoundry/cf-k8s-networking
