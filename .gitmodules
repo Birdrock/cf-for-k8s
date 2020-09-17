@@ -1,0 +1,18 @@
+[submodule "component-packages/kpack"]
+	path = component-packages/kpack
+	url = git@github.com:Birdrock/kpack.git
+[submodule "component-packages/uaa"]
+	path = component-packages/uaa
+	url = git@github.com:Birdrock/uaa.git
+[submodule "component-packages/metric-proxy"]
+	path = component-packages/metric-proxy
+	url = git@github.com:Birdrock/metric-proxy.git
+[submodule "component-packages/cf-k8s-logging"]
+	path = component-packages/cf-k8s-logging
+	url = git@github.com:Birdrock/cf-k8s-logging.git
+[submodule "component-packages/capi-k8s-release"]
+	path = component-packages/capi-k8s-release
+	url = git@github.com:Birdrock/capi-k8s-release.git
+[submodule "component-packages/cf-k8s-networking"]
+	path = component-packages/cf-k8s-networking
+	url = git@github.com:Birdrock/cf-k8s-networking.git
