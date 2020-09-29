@@ -16,3 +16,6 @@
 [submodule "component-packages/cf-k8s-networking"]
 	path = component-packages/cf-k8s-networking
 	url = git@github.com:Birdrock/cf-k8s-networking.git
+[submodule "component-packages/additional-src/cloud_controller_ng"]
+	path = component-packages/additional-src/cloud_controller_ng
+	url = git@github.com:Birdrock/cloud_controller_ng.git
